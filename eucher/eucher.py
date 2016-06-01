@@ -5,7 +5,8 @@ from objects import player as p
 main game for eucher
 """
 
-class Eucher_Player(p.Player):
+
+class EucherPlayer(p.Player):
     """
     creates eucher player
     """
@@ -17,6 +18,7 @@ class Eucher_Player(p.Player):
         self.tricks = 0
         self.card_played = None
         self.team = None
+        self.took_last_trick = False
 
 
 class Eucher(object):
@@ -43,7 +45,7 @@ class Eucher(object):
 
     def create_players(self):
         for player_number in range(self.number_of_players):
-            Eucher_Player(player_number + 1)
+            EucherPlayer(player_number + 1)
 
     def create_teams(self):
         for team_number in range(self.number_of_teams):
@@ -73,6 +75,7 @@ def game_start():
     for player in p.Player.List:
         print('player number: ' + str(player.player_number))
         print('players team number: ' + str(player.team.team_number))
+        print(player.dealer)
 
     for team in p.Team.List:
         print(team.team_number)
