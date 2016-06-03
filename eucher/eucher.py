@@ -1,6 +1,7 @@
 from objects import card
 from eucher import euc_cards as e_card
 from objects import player as p
+from eucher import game_logic as gl
 """
 main game for eucher
 """
@@ -32,6 +33,7 @@ class Eucher(object):
         self.hand_size = 5
         self.number_of_players = 4
         self.number_of_teams = 2
+        self.number_of_rounds = 0
 
     def create_eucher_deck(self):
         for card in self.deck.List:
@@ -66,10 +68,10 @@ class Eucher(object):
         self.team_setup()
 
 
-
 def game_start():
     game_eucher = Eucher(e_card.Eucher_Deck())
     game_eucher.setup()
+    gl.assign_dealer(0)
 
 # ---------DEBUG
     for player in p.Player.List:
