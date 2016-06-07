@@ -131,3 +131,140 @@ class CallingRound(object):
                 else:
                     print('invalid input')
 
+
+# ////////////////////// PLAY ROUND LOGIC /////////////////
+
+class PlayRound(object):
+    """
+    manages player interaction
+    """
+
+    def __init__(self):
+        self.count = 0
+        self.board = []
+
+    def loop(self):
+        done = False
+
+        while not done:
+
+            if self.count == 0:
+                play_order = assign_deal_order()
+            else:
+                play_order = assign_play_order()
+
+            for player in play_order:
+                self.select_card(player)
+
+            # debug ////////////////////////
+            print()
+            for card in self.board:
+                print(card.name)
+            # end debug ////////////////////
+
+            self.select_highest_card()  # picks highest card and awards the trick to the player who played it
+            self.clean_board()  # resets board for next round of play
+
+            self.count += 1
+
+            if self.count > 4:
+                done = True
+                self.award_points()
+                self.clear_trump()
+
+                # debug ///////////////////
+                for team in plr.Team.List:
+                    print(team.points)
+                    # end debug
+
+    def select_card(self, player):
+        print()
+        print('player ' + str(player.player_number) + ' please select a card to play')
+        print()
+        for card in player.hand:
+            print(card.name)
+
+        done = False
+        while not done:
+            player_input = input('please select a card to play: ').lower()
+            for card in player.hand:
+                if card.name.lower() == player_input:
+                    done = self.check_suit(card, player)  # check if player is following suit
+
+    def play_card(self, card, player):  # removes selected card from player's hand and adds it to the board
+
+        self.board.append(card)
+        player.hand.remove(card)
+        player.card_played = card
+
+    def check_suit(self, card, player):
+        suit_to_follow = self.set_suit_to_follow()
+
+        if suit_to_follow is not None:  # checks if suit to follow is None
+            print()
+            print('suit to follow is ' + suit_to_follow.name)
+            if card.suit is not suit_to_follow:  # checks selected card's suit to see if it matches suit to follow
+                print()
+                print('card is not suit to follow')
+                for card_in_hand in player.hand:  # checks players hand for cards that match suit to follow
+                    print()
+                    print('checking hand for card that follows suit')
+                    if card_in_hand.suit is suit_to_follow:  # player must follow suit, return False and select again
+                        print('you have a ' + suit_to_follow.name + ' in your hand! you must follow suit')
+                        return False
+
+                print('playing off suit card')  # shows us that we cannot follow suit, so we can play any card
+
+        self.play_card(card, player)
+        return True
+
+    def set_suit_to_follow(self):
+        if len(self.board) > 0:
+            suit_to_follow = self.board[0].suit
+        else:
+            suit_to_follow = None
+        return suit_to_follow
+
+    def select_hightst_card(self):
+        card_values = []  # keeps track of card values
+        suit_to_follow = self.set_suit_to_follow()
+        high_card = None
+        for card in self.board:
+            if card.suit is not suit_to_follow:
+                continue
+            else:
+                card_values.append(card.ranks[card.rank])
+                if card.ranks[card.rank] == max(card_values):
+                    high_card = card
+
+        self.award_trick(high_card)
+
+    def award_trick(self, high_card):
+        for player in plr.Player.List:
+            if player.card_played == high_card:
+                player.tricks += 1
+                print('player ' + str(player.player_number) + ' took the trick with ' + high_card.name)
+                print('player ' + str(player.player_number) + ' has ' + str(player.tricks) + ' tricks.')
+                player.took_last_trick = True
+                print(str(player.took_last_trick) + ' player ' + str(player.player_number))
+
+    def award_points(self):
+        for team in plr.Team.List:
+            total_tricks = 0
+
+            for player in plr.Player.List:
+                if player.team == team:
+                    total_tricks += player.tricks
+
+            if total_tricks is 5:
+                team.points += 2
+            elif total_tricks > 2:
+                team.points += 1
+
+    def clean_board(self):  # empties the board list
+        for card in self.board[::-1]:
+            self.board.remove(card)
+
+    def clear_trump(self):
+        for eucher_card in cd.List:
+            eucher_card.trump = False

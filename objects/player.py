@@ -10,6 +10,7 @@ class Player(object):
     def __init__(self, player_number):
         self.hand = None
         self.player_number = player_number
+        self.card_played = None
         Player.List.append(self)
 
 

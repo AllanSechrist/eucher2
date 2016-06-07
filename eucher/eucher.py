@@ -9,7 +9,7 @@ main game for eucher
 
 class EucherPlayer(p.Player):
     """
-    creates eucher player
+    creates player object with attributes unique to Eucher
     """
 
     def __init__(self, player_number):
@@ -69,7 +69,7 @@ class Eucher(object):
 
 
 def game_start():
-    game_eucher = Eucher(e_card.Eucher_Deck())
+    game_eucher = Eucher(e_card.EucherDeck())
     game_eucher.setup()
     gl.assign_dealer(0)
 

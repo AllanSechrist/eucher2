@@ -1,7 +1,7 @@
 from objects import card
 
 
-class Eucher_Card(card.Card):
+class EucherCard(card.Card):
     """
     sets up attributes for cards in Eucher
     """
@@ -12,10 +12,49 @@ class Eucher_Card(card.Card):
         self.trump = False
 
 
-class Eucher_Deck(card.Deck):
+class Jack(EucherCard):
+    """
+    creates Jack ranked cards
+
+    in Eucher Jacks are have special attributes when they are made trump
+    """
+
+    JACKS = []
+
+    red = []
+    black = []
+
+    for suit in card.Card.SUITS:
+        if suit is 'Hearts' or suit is 'Diamonds':
+            red.append(suit)
+        else:
+            black.append(suit)
+
+    def __init__(self, suit, rank):
+        super().__init__(suit, rank)
+
+        self.left_bower = False
+        Jack.JACKS.append(self)
+
+    @staticmethod
+    def set_left_bower():
+        for jack in Jack.JACKS:
+            if jack.trump is True:
+                for bower in Jack.JACKS:
+                    if jack.suit is 'Hearts' and bower.suit is 'Diamonds':
+                        bower.left_bower = True
+                    elif jack.suit is 'Diamonds' and bower.suit is 'Hearts':
+                        bower.left_bower = True
+                    elif jack.suit is 'Spades' and bower.suit is 'Clubs':
+                        bower.left_bower = True
+                    elif jack.suit is 'Clubs' and bower.suit is 'Spades':
+                        bower.left_bower = True
+
+
+class EucherDeck(card.Deck):
     """
     sets up attributes for deck in Eucher
     """
 
     def __init__(self):
-        Eucher_Deck.create_cards(Eucher_Card)
+        EucherDeck.create_cards(EucherCard)
