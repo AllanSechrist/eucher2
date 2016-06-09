@@ -10,8 +10,8 @@ import random
 def play_order(list, number):
     play_order = [list[(number - 1) % 4],
                   list[number % 4],
-                  list[number + 1] % 4,
-                  list[number + 2] % 4]
+                  list[(number + 1) % 4],
+                  list[(number + 2) % 4]]
     return play_order
 
 
@@ -35,7 +35,6 @@ def assign_dealer(count):
     if count < 1:
         dealer = random.choice(plr.Player.List)  # assign random person to be dealer at the game start
         dealer.dealer = True
-        count += 1  # keeps track of number of rounds(may be changed later to a boolean for the start of the game)
         print('player ' + str(dealer.player_number) + ' has been made dealer')
 
         # debug
@@ -48,16 +47,21 @@ def assign_dealer(count):
 
 
 class CallingRound(object):
+
     """
     manages player interaction for calling trump
     """
 
+    calling_round = None
+
     def __init__(self):
         self.top_card = cd.Deck.List[0]
-        assign_dealer(0)
-        self.play_order = assign_deal_order()
+        self.play_order = []
+        CallingRound.calling_round = self
 
-    def loop(self):  # manages class methods
+    def loop(self, count):  # manages class methods
+        assign_dealer(count)
+        self.play_order = assign_deal_order()
         done = False
         while not done:
             print(self.top_card.suit)
@@ -109,6 +113,10 @@ class CallingRound(object):
 
     def pass_or_call_2(self):
 
+        print()
+        print('second pass or call')
+        print()
+
         for player in self.play_order:
             done = False
             while not done:
@@ -120,11 +128,11 @@ class CallingRound(object):
                         trump_input = input('please select a suit to call trump: ')
                         for suit in cd.Card.SUITS:
 
-                            if trump_input == suit and suit != self.top_card:
+                            if trump_input == suit and suit != self.top_card.suit:
                                 print(suit + ' has been made trump')
                                 self.make_suit_trump(trump_input)  # make selected suit trump
                                 return True
-                            elif trump_input == self.top_card:
+                            elif trump_input == self.top_card.suit:
                                 print('You cannot call that trump')
                                 break
 
@@ -139,9 +147,12 @@ class PlayRound(object):
     manages player interaction
     """
 
+    play_round = None
+
     def __init__(self):
         self.count = 0
         self.board = []
+        PlayRound.play_round = self
 
     def loop(self):
         done = False
@@ -175,7 +186,7 @@ class PlayRound(object):
                 # debug ///////////////////
                 for team in plr.Team.List:
                     print(team.points)
-                    # end debug
+                # end debug
 
     def select_card(self, player):
         print()
@@ -225,7 +236,7 @@ class PlayRound(object):
             suit_to_follow = None
         return suit_to_follow
 
-    def select_hightst_card(self):
+    def select_highest_card(self):
         card_values = []  # keeps track of card values
         suit_to_follow = self.set_suit_to_follow()
         high_card = None
@@ -266,5 +277,5 @@ class PlayRound(object):
             self.board.remove(card)
 
     def clear_trump(self):
-        for eucher_card in cd.List:
+        for eucher_card in cd.Deck.List:
             eucher_card.trump = False

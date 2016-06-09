@@ -33,21 +33,3 @@ class Deck(object):
     def shuffle():
         random.shuffle(Deck.List)
 
-
-class Hand(object):
-    """
-    creates a hand of cards
-    """
-
-    def __init__(self, size):
-        self.cards = []  # a list to store the cards in this hand
-        self.size = size
-        self.make_hand()
-
-    def make_hand(self):
-        for slot in range(Hand.size):
-            self.swap(Deck.List[0])
-
-    def swap(self, card):
-        Deck.List.remove(card)
-        self.cards.append(card)

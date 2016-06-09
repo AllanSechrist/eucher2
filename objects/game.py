@@ -1,5 +1,10 @@
-from eucher import eucher
+def game_loop(game):
+    game.game_start()
 
-def game_start(game_object):
-    pass
+    done = False
+
+    while not done:
+        game.main_game()
+        done = True
+
 

@@ -1,9 +1,9 @@
-from eucher import eucher
+from objects import game
 from objects import card
-
+from eucher import eucher
 
 def main():
-    eucher.game_start()
+    game.game_loop(eucher.Eucher(card.Deck.List))
 
     quit()
 
