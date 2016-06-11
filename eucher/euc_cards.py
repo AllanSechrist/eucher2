@@ -6,6 +6,9 @@ class EucherCard(card.Card):
     sets up attributes for cards in Eucher
     """
 
+    RANKS = {'9': 9, '10': 10, 'Jack': 11,
+             'Queen': 12, 'King': 13, 'Ace': 14}
+
     def __init__(self, suit, rank):
         super().__init__(suit, rank)
 
@@ -57,4 +60,17 @@ class EucherDeck(card.Deck):
     """
 
     def __init__(self):
-        EucherDeck.create_cards(EucherCard)
+        EucherDeck.create_eucher_cards()
+        EucherDeck.remove_cards()
+
+    @staticmethod
+    def create_eucher_cards():
+        for suit in card.Card.SUITS:
+            for rank in EucherCard.RANKS:
+                card.Deck.List.append(EucherCard(suit, rank))
+
+    @staticmethod
+    def remove_cards():
+        for euc_card in card.Deck.List:
+            if euc_card.RANKS[euc_card.rank] < 9:
+                card.Deck.List.remove(euc_card)

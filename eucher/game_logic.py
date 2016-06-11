@@ -55,6 +55,8 @@ class CallingRound(object):
     calling_round = None
 
     def __init__(self):
+        # debug
+        print(len(cd.Deck.List))
         self.top_card = cd.Deck.List[0]
         self.play_order = []
         CallingRound.calling_round = self
@@ -65,6 +67,7 @@ class CallingRound(object):
         done = False
         while not done:
             print(self.top_card.suit)
+            print(self.top_card.name)
             done = self.pass_or_call()
 
     def make_suit_trump(self, suit):
@@ -159,6 +162,8 @@ class PlayRound(object):
 
         while not done:
 
+            self.clean_board()
+
             if self.count == 0:
                 play_order = assign_deal_order()
             else:
@@ -174,7 +179,6 @@ class PlayRound(object):
             # end debug ////////////////////
 
             self.select_highest_card()  # picks highest card and awards the trick to the player who played it
-            self.clean_board()  # resets board for next round of play
 
             self.count += 1
 
@@ -213,7 +217,7 @@ class PlayRound(object):
 
         if suit_to_follow is not None:  # checks if suit to follow is None
             print()
-            print('suit to follow is ' + suit_to_follow.name)
+            print('suit to follow is ' + suit_to_follow)
             if card.suit is not suit_to_follow:  # checks selected card's suit to see if it matches suit to follow
                 print()
                 print('card is not suit to follow')
@@ -221,7 +225,7 @@ class PlayRound(object):
                     print()
                     print('checking hand for card that follows suit')
                     if card_in_hand.suit is suit_to_follow:  # player must follow suit, return False and select again
-                        print('you have a ' + suit_to_follow.name + ' in your hand! you must follow suit')
+                        print('you have a ' + suit_to_follow + ' in your hand! you must follow suit')
                         return False
 
                 print('playing off suit card')  # shows us that we cannot follow suit, so we can play any card
@@ -244,8 +248,8 @@ class PlayRound(object):
             if card.suit is not suit_to_follow:
                 continue
             else:
-                card_values.append(card.ranks[card.rank])
-                if card.ranks[card.rank] == max(card_values):
+                card_values.append(card.RANKS[card.rank])
+                if card.RANKS[card.rank] == max(card_values):
                     high_card = card
 
         self.award_trick(high_card)
@@ -275,6 +279,9 @@ class PlayRound(object):
     def clean_board(self):  # empties the board list
         for card in self.board[::-1]:
             self.board.remove(card)
+
+        for player in plr.Player.List:  # resets variable
+            player.took_last_trick = False
 
     def clear_trump(self):
         for eucher_card in cd.Deck.List:

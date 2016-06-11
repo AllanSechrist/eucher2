@@ -35,10 +35,12 @@ class Eucher(object):
         self.NUMBER_OF_TEAMS = 2
         self.number_of_rounds = 0
 
+    """
     def create_eucher_deck(self):
         for card in self.deck.List:
             if card.RANKS[card.rank] < 9:
                 self.deck.List.remove(card)
+    """
 
     # DEBUG METHOD
     def print_cards(self):
@@ -80,17 +82,18 @@ class Eucher(object):
                 player.team = p.Team.List[1]
 
     def setup(self):  # initial setup of game
-        self.create_eucher_deck()
+        # self.create_eucher_deck()
         self.team_setup()
 
     @staticmethod
     def game_start():
         game_eucher = Eucher(e_card.EucherDeck())
         game_eucher.setup()
-        gl.CallingRound()
-        gl.PlayRound()
 
     def main_game(self):
+        self.deal_hands()
+        gl.CallingRound()
+        gl.PlayRound()
         gl.CallingRound.calling_round.loop(self.number_of_rounds)
         gl.PlayRound.play_round.loop()
         self.number_of_rounds += 1
