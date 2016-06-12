@@ -28,7 +28,9 @@ def assign_play_order():  # play order will change after each trick
 
     for player in player_list:
         if player.took_last_trick is True:
+            player.took_last_trick = False  # ensure that variable is set to False after play order has been set
             return play_order(player_list, player.player_number)
+
 
 
 def assign_dealer(count):
@@ -90,7 +92,8 @@ class CallingRound(object):
 
         return self.pass_or_call_2()
 
-    def get_player_input(self, player):
+    @staticmethod
+    def get_player_input(player):
         player_input = input('player ' + str(player.player_number) + ' PASS or TRUMP? :').upper()
         return player_input
 
@@ -100,8 +103,10 @@ class CallingRound(object):
         dealers_hand.append(self.top_card)  # adds the top card of the kitty ot the dealers hand
         cd.Deck.List.remove(self.top_card)  # removes top card from the kitty
 
+        print()
         for card in dealers_hand:
             print(card.name)
+        print()
 
         done = False
         while not done:
@@ -162,12 +167,13 @@ class PlayRound(object):
 
         while not done:
 
-            self.clean_board()
 
             if self.count == 0:
                 play_order = assign_deal_order()
             else:
                 play_order = assign_play_order()
+
+            # self.reset_players()
 
             for player in play_order:
                 self.select_card(player)
@@ -179,6 +185,7 @@ class PlayRound(object):
             # end debug ////////////////////
 
             self.select_highest_card()  # picks highest card and awards the trick to the player who played it
+            self.clean_board()
 
             self.count += 1
 
@@ -201,6 +208,7 @@ class PlayRound(object):
 
         done = False
         while not done:
+            print()
             player_input = input('please select a card to play: ').lower()
             for card in player.hand:
                 if card.name.lower() == player_input:
@@ -279,10 +287,14 @@ class PlayRound(object):
     def clean_board(self):  # empties the board list
         for card in self.board[::-1]:
             self.board.remove(card)
+            cd.Deck.List.append(card)
 
+    @staticmethod
+    def reset_players():
         for player in plr.Player.List:  # resets variable
             player.took_last_trick = False
 
-    def clear_trump(self):
+    @staticmethod
+    def clear_trump():
         for eucher_card in cd.Deck.List:
             eucher_card.trump = False
