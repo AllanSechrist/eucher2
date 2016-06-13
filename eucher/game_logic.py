@@ -4,6 +4,7 @@ game logic goes here
 
 from objects import player as plr
 from objects import card as cd
+from eucher import euc_cards as ecd
 import random
 
 
@@ -72,8 +73,37 @@ class CallingRound(object):
             print(self.top_card.name)
             done = self.pass_or_call()
 
-    def make_suit_trump(self, suit):
-        pass
+    @staticmethod
+    def make_suit_trump(suit):
+        for card in ecd.EucherDeck.ALL_CARDS:
+            if card.suit is suit:
+                card.trump = True
+        ecd.Jack.set_left_bower()
+
+        # debug //////////////////////////////////////////////////////
+        """
+        print()
+        for player in plr.Player.List:
+            for card in player.hand:
+                if card.trump is True:
+                    print(card.name)
+        for card in cd.Deck.List:
+            if card.trump is True:
+                print(card.name)
+        print()
+        for card in ecd.EucherDeck.ALL_CARDS:
+            if card.trump is True:
+                print(card.name)
+        print()
+        for card in ecd.Jack.JACKS:
+            print(card.name)
+        print()
+        for suit in ecd.Jack.red:
+            print(suit)
+        for suit in ecd.Jack.black:
+            print(suit)
+        """
+        # end debug ////////////////////////////////////////////////////
 
     def pass_or_call(self):
         for player in self.play_order:
@@ -148,7 +178,7 @@ class CallingRound(object):
                     print('invalid input')
 
 
-# ////////////////////// PLAY ROUND LOGIC /////////////////
+# --------------- PLAY ROUND LOGIC -----------------
 
 class PlayRound(object):
     """
@@ -167,7 +197,6 @@ class PlayRound(object):
 
         while not done:
 
-
             if self.count == 0:
                 play_order = assign_deal_order()
             else:
@@ -178,11 +207,11 @@ class PlayRound(object):
             for player in play_order:
                 self.select_card(player)
 
-            # debug ////////////////////////
+            # debug ///////////////////////////////////////////
             print()
             for card in self.board:
                 print(card.name)
-            # end debug ////////////////////
+            # end debug ///////////////////////////////////////////
 
             self.select_highest_card()  # picks highest card and awards the trick to the player who played it
             self.clean_board()
@@ -194,7 +223,7 @@ class PlayRound(object):
                 self.award_points()
                 self.clear_trump()
 
-                # debug ///////////////////
+                # debug //////////////////////////////////////////////////
                 for team in plr.Team.List:
                     print(team.points)
                 # end debug

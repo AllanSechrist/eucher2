@@ -27,6 +27,11 @@ class Jack(EucherCard):
     red = []
     black = []
 
+    BOWERS = {'Hearts': 'Diamonds',
+              'Diamonds': 'Hearts',
+              'Spades': 'Clubs',
+              'Clubs': 'Spades'}
+
     for suit in card.Card.SUITS:
         if suit is 'Hearts' or suit is 'Diamonds':
             red.append(suit)
@@ -52,12 +57,22 @@ class Jack(EucherCard):
                         bower.left_bower = True
                     elif jack.suit is 'Clubs' and bower.suit is 'Spades':
                         bower.left_bower = True
+        Jack.change_left_bower()
+
+    def change_left_bower(self):  # sets stats for left bower
+        if self.left_bower is True:
+            for suit in self.BOWERS:
+                if self.suit == suit:
+                    self.suit = suit
+
 
 
 class EucherDeck(card.Deck):
     """
     sets up attributes for deck in Eucher
     """
+
+    ALL_CARDS = []  # I needed a list that had a reference to all the cards in the game for making them trump
 
     def __init__(self):
         EucherDeck.create_eucher_cards()
@@ -67,7 +82,13 @@ class EucherDeck(card.Deck):
     def create_eucher_cards():
         for suit in card.Card.SUITS:
             for rank in EucherCard.RANKS:
-                card.Deck.List.append(EucherCard(suit, rank))
+                if rank == 'Jack':
+                    eucher_card = Jack(suit, rank)
+                else:
+                    eucher_card = EucherCard(suit, rank)
+                card.Deck.List.append(eucher_card)
+                EucherDeck.ALL_CARDS.append(eucher_card)
+
 
     @staticmethod
     def remove_cards():
